@@ -1,0 +1,1 @@
+/usr/bin/c++   -std=c++11  -rdynamic CMakeFiles/tensor_times_vector.dir/tensor_times_vector.cpp.o  -o tensor_times_vector -Wl,-rpath,/home/xwb/taco/transpose/taco/build/lib /home/xwb/taco/transpose/taco/build/lib/libtaco.so 

@@ -1,0 +1,3 @@
+/home/xwb/taco/transpose/taco/apps/tensor_5_fusion/build/CMakeFiles/rebuild_cache.dir
+/home/xwb/taco/transpose/taco/apps/tensor_5_fusion/build/CMakeFiles/edit_cache.dir
+/home/xwb/taco/transpose/taco/apps/tensor_5_fusion/build/CMakeFiles/tensor_5_fusion.dir

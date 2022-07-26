@@ -1,0 +1,3 @@
+/home/xwb/taco/transpose/taco/apps/tensor_times_vector/build/CMakeFiles/rebuild_cache.dir
+/home/xwb/taco/transpose/taco/apps/tensor_times_vector/build/CMakeFiles/tensor_times_vector.dir
+/home/xwb/taco/transpose/taco/apps/tensor_times_vector/build/CMakeFiles/edit_cache.dir

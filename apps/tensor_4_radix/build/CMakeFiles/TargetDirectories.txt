@@ -1,0 +1,3 @@
+/home/xwb/taco/transpose/taco/apps/tensor_4_radix/build/CMakeFiles/rebuild_cache.dir
+/home/xwb/taco/transpose/taco/apps/tensor_4_radix/build/CMakeFiles/edit_cache.dir
+/home/xwb/taco/transpose/taco/apps/tensor_4_radix/build/CMakeFiles/tensor_4_radix.dir

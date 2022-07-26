@@ -1,0 +1,1 @@
+/usr/bin/c++  -std=c++11 -g -g -rdynamic CMakeFiles/tensor_4_fusion.dir/tensor_transpose.cpp.o -o tensor_4_fusion   -L/home/xwb/cutt/lib  -Wl,-rpath,/home/xwb/cutt/lib:/usr/local/cuda-10.1/lib64:/home/xwb/taco/transpose/taco/build/lib -lcutt /usr/local/cuda-10.1/lib64/libcudnn.so /usr/local/cuda-10.1/lib64/libcudart.so /home/xwb/taco/transpose/taco/build/lib/libtaco.so 

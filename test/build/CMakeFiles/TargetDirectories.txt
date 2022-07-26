@@ -1,0 +1,4 @@
+/home/xwb/taco/transpose/taco/test/build/CMakeFiles/rebuild_cache.dir
+/home/xwb/taco/transpose/taco/test/build/CMakeFiles/edit_cache.dir
+/home/xwb/taco/transpose/taco/test/build/CMakeFiles/gtest.dir
+/home/xwb/taco/transpose/taco/test/build/CMakeFiles/taco-test.dir

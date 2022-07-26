@@ -1,0 +1,1 @@
+/usr/bin/c++   -std=c++11 -g -g  -rdynamic CMakeFiles/tensor_4_radix.dir/tensor_transpose.cpp.o  -o tensor_4_radix  -Wl,-rpath,/home/xwb/taco/transpose/taco/build/lib /home/xwb/taco/transpose/taco/build/lib/libtaco.so 

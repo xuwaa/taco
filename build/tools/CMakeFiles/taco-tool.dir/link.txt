@@ -1,0 +1,1 @@
+/usr/bin/c++ -Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -Wmissing-declarations -Woverloaded-virtual -pedantic-errors -Wno-deprecated -std=c++11  -O3 -Wall -rdynamic CMakeFiles/taco-tool.dir/taco.cpp.o -o ../bin/taco  -Wl,-rpath,/home/xwb/transpose/taco/build/lib: ../lib/libtaco.so 

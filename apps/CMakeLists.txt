@@ -1,0 +1,6 @@
+add_subdirectory(tensor_5)
+add_subdirectory(tensor_5_fusion)
+add_subdirectory(tensor_3_radix)
+add_subdirectory(tensor_3_fusion)
+add_subdirectory(tensor_4_radix)
+add_subdirectory(tensor_4_fusion)

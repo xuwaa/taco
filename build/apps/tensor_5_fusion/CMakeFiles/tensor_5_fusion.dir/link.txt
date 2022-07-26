@@ -1,0 +1,1 @@
+/usr/bin/c++ -Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -Wmissing-declarations -Woverloaded-virtual -pedantic-errors -Wno-deprecated -std=c++11 -std=c++11 -g  -O3 -Wall -rdynamic CMakeFiles/tensor_5_fusion.dir/tensor_transpose.cpp.o -o ../../bin/taco-tensor_5_fusion  -Wl,-rpath,/home/xwb/transpose/taco/build/lib ../../lib/libtaco.so 

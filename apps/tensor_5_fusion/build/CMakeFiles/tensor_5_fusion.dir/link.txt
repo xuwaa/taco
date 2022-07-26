@@ -1,0 +1,1 @@
+/usr/bin/c++  -std=c++11 -g -g -rdynamic CMakeFiles/tensor_5_fusion.dir/tensor_transpose.cpp.o -o tensor_5_fusion  -Wl,-rpath,/home/xwb/taco/transpose/taco/build/lib /home/xwb/taco/transpose/taco/build/lib/libtaco.so 
