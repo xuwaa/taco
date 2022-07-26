@@ -23,55 +23,67 @@ typedef int CMPFUNC (const void *a, const void *b);
 	/*
 		blitsort 1.1.5.1
 	*/
+	/***
+	**ÏÂÃæÇ°Ò»¶ÎÊÇ»ù±¾µÄ¹é²¢ÅÅĞòµÄÊµÏÖ²¿·Ö
+	**sortÎªÆÕÍ¨¹é²¢ÅÅĞòµÄÊµÏÖ
+	***/
 
-void G_qsort(struct coo_t *a, int first, int mid, int last, struct coo_t *temp, CMPFUNC *cmp)
-{
-	int n = mid, m = last;
-	int k = 0;
-	int i = first, j = mid + 1;
-	while (i <= n && j <= m)  // ¿¿¿¿¿¿
+	void Gqsort(struct coo_t *a, int first, int mid, int last, struct coo_t *temp, CMPFUNC *cmp)
 	{
-		if (cmp(a+i,a+j))  //  i¿j¿¿¿¿
+		int n = mid, m = last;
+		int k _ = 0;
+		int i = first, j = mid + 1;
+		while (i <= n && j <= m)  // Á½±ßÍ¬Ê±½øĞĞ
 		{
-			temp[k++] = a[j++];  // ¿¿i <= j,¿i¿¿¿¿¿temp¿¿
+			if (cmp(a + i, a + j))  //  iºÍj½øĞĞ±È½Ï
+			{
+				temp[k++] = a[j++];  // Èç¹ûi <= j,ÔòiµÄÖµÒÆ¶¯µ½tempÀïÃæ
+			}
+			else
+			{
+				temp[k++] = a[i++];   // Èç¹ûi > j,ÔòjµÄÖµÒÆ¶¯µ½tempÀïÃæ
+			}
 		}
-		else
+		while (i <= n)
 		{
-			temp[k++] = a[i++];   // ¿¿i > j,¿j¿¿¿¿¿temp¿¿
+			temp[k++] = a[i++];
+		}
+		while (j <= m)
+		{
+			temp[k++] = a[j++];
+		}
+		for (i = 0; i < k; i++)
+		{
+			a[first + i] = temp[i];
 		}
 	}
-	while (i <= n) 
-	{
-		temp[k++] = a[i++];
-	}
-	while (j <= m)
-	{
-		temp[k++] = a[j++];
-	}
-	for (i = 0; i < k; i++)
-	{
-		a[first + i] = temp[i];
-	}
-}
 
-void G_sort(struct coo_t*a, int first, int last, struct coo_t*temp, CMPFUNC *cmp)
-{
-	if (first < last)  //  ¿¿¿¿¿¿¿¿¿¿¿¿¿
+	void G_sort(struct coo_t*a, int first, int last, struct coo_t*temp, CMPFUNC *cmp)
 	{
-		int mid = (first + last) / 2;  // ¿¿¿¿¿
-		G_sort(a, first, mid, temp,cmp);  //  ¿¿¿¿¿¿
-		G_sort(a, mid + 1, last, temp,cmp);   // ¿¿
-		G_qsort(a, first, mid, last, temp,cmp);  // ¿¿¿¿
+		if (first < last)  //  µ±Í¬Ê±µ½´ïÒ»¸öÊıÊ±½áÊøÅĞ¶Ï
+		{
+			int mid = (first + last) / 2;  // ÕÒµ½ÖĞ¼äÖµ
+			G_sort(a, first, mid, temp, cmp);  //  µİ¹éº¯Êı×ó±ß
+			G_sort(a, mid + 1, last, temp, cmp);   // ÓÒ±ß
+			G_qsort(a, first, mid, last, temp, cmp);  // ½øĞĞÅÅĞò
+		}
 	}
-}
 
-void sort(struct coo_t*a, int n,CMPFUNC *cmp)
-{
-	struct coo_t* p = (struct coo_t *)malloc(sizeof(struct coo_t) * n);
-	G_sort(a, 0, n - 1, p,cmp);  // ¿¿¿¿¿¿¿0¿n-1¿¿¿¿¿¿¿¿¿¿¿¿
-	free(p);
-	
-}
+	void sort(struct coo_t*a, int n, CMPFUNC *cmp)
+	{
+		struct coo_t* p = (struct coo_t *)malloc(sizeof(struct coo_t) * n);
+		G_sort(a, 0, n - 1, p, cmp);
+		free(p);
+
+	}
+
+
+
+	/***
+	*ÏÂÃæµÄº¯Êı¶¼ÊÇÎªÁË·şÎñÓÚº¯Êıblitsort£¬Æä±íÊ¾ÓÅ»¯ºóµÄ¹é²¢ÅÅĞò
+	*
+	***/
+
 	// the next six functions are used for sorting 0 to 31 elements
 void parity_merge_two(struct coo_t *array, struct coo_t *swap,int x,int y,struct coo_t * ptl,struct coo_t * ptr, struct coo_t *pts, CMPFUNC *cmp)  
 {  //±È½ÏËÄ¸öÊı£¬Á½¸öÁ½¸öÒ»×é½øĞĞÇ°ºó±È½Ï£¬½«Á½×é¹²ËÄ¸öÊı
