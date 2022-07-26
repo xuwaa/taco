@@ -32,6 +32,11 @@ struct coo_t
 
 **/
 using namespace taco;
+
+/**
+*cmp部分都是用于比较不同的维度顺序，占很大一段篇幅
+*
+**/
 int cmp_01234(const void *p, const void *q)
 {
 	struct coo_t * r = (struct coo_t *)p;
@@ -8507,6 +8512,18 @@ int cmp_3210(const void *p, const void *q)
 	}
 	return 0;
 }
+
+/**
+**从下面开始的transpose_coo_xxxxx_kx的函数代表：xxxx代表为你最终排序的顺序，kx代表过程中对每一步在使用不同的排序结果比较
+**例如：transpose_coo_10324_k0代表直接使用快速排序
+**		transpose_coo_10324_k1代表对1使用计数排序，然后对1维度形成桶，然后对剩下的0324进行快速排序
+**		transpose_coo_10324_k2代表对1使用计数排序，然后对10维度形成桶，然后对剩下的324进行快速排序
+**		transpose_coo_10324_k3代表对1使用计数排序，然后对10维度形成桶，然后对3维度进行桶排序排序好103，再剩下的24进行快速排序
+**		transpose_coo_10324_k4代表对1使用计数排序，然后对10维度形成桶，然后对3维度进行桶排序排序好103，再剩下的4进行快速排序
+**		transpose_coo_10324_k5代表对1使用计数排序，然后对10维度形成桶，然后对3维度进行桶排序排序好103，再剩下的24进行因为初始为01234，所以排序完毕。
+**/
+
+
 // transpose permutes the modes of the coordinates to be (0, 1, 2, 3, 4)
 int transpose_coo_01234_k0(struct coo_t *C_coords, int c_size, int order, int *dimensions) {
 	taco::util::Timer timer;
@@ -66270,6 +66287,106 @@ int transpose_coo_43210_k5(struct coo_t *C_coords, int c_size, int order, int *d
 	cout << " , "<< res ;
 	return 0;
 }
+
+
+/***************************************************************************************/
+/**
+*下面的函数使用了基本的归并算法sort，用于和优化的归并算法blitsort进行运行速度上的比较
+*
+**/
+
+
+int sort_k3(struct coo_t *C_coords, int c_size, int order, int *dimensions) {
+	taco::util::Timer timer;
+	timer.start();
+	struct coo_t* C_coords_scratch = (struct coo_t *)malloc(sizeof(struct coo_t) * c_size);
+	int* perm = (int *)malloc(sizeof(int) * c_size);
+
+	// Sort the coordinates to be in (2, 1, 0, 4, 3)
+
+	// Histogram sort on mode 1
+	int B1_size = dimensions[1];
+	int32_t *B1_count = (int32_t *)calloc(B1_size, sizeof(int32_t));
+	for (int i = 0; i < c_size; i++)
+	{
+		int32_t idx1 = C_coords[i].idx1;
+		B1_count[idx1]++;
+	}
+
+	// Prefix sum over B1_count
+	for (int idx1 = 1; idx1 < B1_size; idx1++)
+	{
+		B1_count[idx1] += B1_count[idx1 - 1];
+	}
+	for (int i = c_size - 1; i >= 0; i--)
+	{
+		int32_t idx1 = C_coords[i].idx1;
+		int idx = B1_count[idx1] - 1;
+		C_coords_scratch[idx] = C_coords[i];
+		B1_count[idx1]--;
+	}
+
+	memcpy(C_coords, C_coords_scratch, c_size * sizeof(struct coo_t));
+
+
+	free(B1_count);
+
+	// Histogram sort on mode 2
+	int B2_size = dimensions[2];
+	int32_t *B2_count = (int32_t *)calloc(B2_size, sizeof(int32_t));
+	for (int i = 0; i < c_size; i++)
+	{
+		int32_t idx2 = C_coords[i].idx2;
+		B2_count[idx2]++;
+	}
+
+	// Prefix sum over B2_count
+	for (int idx2 = 1; idx2 < B2_size; idx2++)
+	{
+		B2_count[idx2] += B2_count[idx2 - 1];
+	}
+	for (int i = c_size - 1; i >= 0; i--)
+	{
+		int32_t idx2 = C_coords[i].idx2;
+		int idx = B2_count[idx2] - 1;
+		C_coords_scratch[idx] = C_coords[i];
+		B2_count[idx2]--;
+	}
+
+	memcpy(C_coords, C_coords_scratch, c_size * sizeof(struct coo_t));
+
+
+	free(B2_count);
+	// Use qsort to sort the subtrees
+	int qsort_start = 0;
+	for (int i = 1; i < c_size; i++)
+	{
+		int qsort_same = 1;
+		if (C_coords[i].idx2 != C_coords[i - 1].idx2) {
+			qsort_same = 0;
+		}
+		else if (C_coords[i].idx1 != C_coords[i - 1].idx1) {
+			qsort_same = 0;
+		}
+		else if (C_coords[i].idx0 != C_coords[i - 1].idx0) {
+			qsort_same = 0;
+		}
+		if (!qsort_same || i == c_size - 1) { // Sort if at the end of a segment
+			//使用了基本的归并排序算法运用
+			sort(&C_coords[qsort_start], (i - qsort_start), cmp_4);
+			qsort_start = i;
+		}
+	}
+	// Free the scratch space.
+	free(C_coords_scratch);
+	free(perm);
+	timer.stop();
+	taco::util::TimeResults res = timer.getResult();
+	cout << " ,  [(1, []), (2, [])] ";
+	cout << " , " << res;
+	return 0;
+}
+
 
 int main(int argc, char* argv[]) {
   std::string filename = "/home/xwb/transpose/taco/apps/tensor_5/lbnl-network.tns";
