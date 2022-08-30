@@ -9,12 +9,12 @@
 /*/ home / xwb / taco / transpose / taco / apps / tensor_4_fusion
 '4a037ec7b4c80987320379feba850bc31de8c0b9949ef1045551c4866fe3c1c6'
 */
- int cmp(const void *p, const void *q, int *a, int length);
+int cmp(const void *p, const void *q, int *a, int length);
 
- struct coo_t {
-	 int  idx[5];
-	 int  val;
- };
+struct coo_t {
+	int  idx[3];
+	int  val;
+};
 
 
 /*
@@ -86,7 +86,7 @@ void parity_merge_two(struct coo_t *array, struct coo_t *swap, int x, int y, str
 {  //比较四个数，两个两个一组进行前后比较，将两组共四个数
 	ptl = array + 0; ptr = array + 2; pts = swap + 0;
 	x = cmp(ptl, ptr, a, length) <= 0; y = !x; pts[x] = *ptr; ptr += y; pts[y] = *ptl; ptl += x; pts++;
-	*pts = cmp(ptl, ptr,a, length) <= 0 ? *ptl : *ptr;
+	*pts = cmp(ptl, ptr, a, length) <= 0 ? *ptl : *ptr;
 
 	ptl = array + 1; ptr = array + 3; pts = swap + 3;
 	x = cmp(ptl, ptr, a, length) <= 0; y = !x; pts--; pts[x] = *ptr; ptr -= x; pts[y] = *ptl; ptl -= y;
@@ -107,7 +107,7 @@ void parity_merge_four(struct coo_t *array, struct coo_t *swap, int x, int y, st
 	x = cmp(ptl, ptr, a, length) <= 0; y = !x; pts--; pts[x] = *ptr; ptr -= x; pts[y] = *ptl; ptl -= y;
 	*pts = cmp(ptl, ptr, a, length) > 0 ? *ptl : *ptr;
 }
-void unguarded_insert(struct coo_t *array, size_t offset, size_t nmemb,  int* a, int length)
+void unguarded_insert(struct coo_t *array, size_t offset, size_t nmemb, int* a, int length)
 {//给数组从小到大排序，--pta是end的前一项，排序截至nmemb的数
 
 	struct coo_t key, *pta, *end;//sitruct coo_t char
@@ -147,10 +147,10 @@ void unguarded_insert(struct coo_t *array, size_t offset, size_t nmemb,  int* a,
 	}
 }
 
-void parity_swap_four(struct coo_t *array,int* a, int length)
+void parity_swap_four(struct coo_t *array, int* a, int length)
 {//将四个数分成两组，前两个有序放到swap数组，后两个有序放到swap数组，在用归并排序前后两组数据
 	struct coo_t swap[4];
-	struct coo_t ptl[1]; 
+	struct coo_t ptl[1];
 	struct coo_t  ptr[1];
 	struct coo_t pts[1];
 	unsigned char x, y;
@@ -162,14 +162,14 @@ void parity_swap_four(struct coo_t *array,int* a, int length)
 
 }
 
-void parity_swap_eight(struct coo_t *array,int* a, int length)
+void parity_swap_eight(struct coo_t *array, int* a, int length)
 {//排序8个数
 	struct coo_t swap[8];
 	struct coo_t ptl[1];
 	struct coo_t  ptr[1];
 	struct coo_t pts[1];
 	unsigned char x = 0;
-	unsigned char y=0;
+	unsigned char y = 0;
 
 	if (cmp(array + 0, array + 1, a, length) > 0) { swap[0] = array[0]; array[0] = array[1]; array[1] = swap[0]; }
 	if (cmp(array + 2, array + 3, a, length) > 0) { swap[0] = array[2]; array[2] = array[3]; array[3] = swap[0]; }
@@ -179,13 +179,13 @@ void parity_swap_eight(struct coo_t *array,int* a, int length)
 	{
 		return;
 	}
-	parity_merge_two(array + 0, swap + 0, x, y, ptl, ptr, pts,  a, length);
+	parity_merge_two(array + 0, swap + 0, x, y, ptl, ptr, pts, a, length);
 	parity_merge_two(array + 4, swap + 4, x, y, ptl, ptr, pts, a, length);
 
 	parity_merge_four(swap, array, x, y, ptl, ptr, pts, a, length);
 }
 
-void parity_merge(struct coo_t *dest, struct coo_t *from, size_t block, size_t nmemb,int* a, int length)
+void parity_merge(struct coo_t *dest, struct coo_t *from, size_t block, size_t nmemb, int* a, int length)
 {//目标数组 交换后数组 块长 块尾  比较
 	//排序两组块
 	struct coo_t *ptl, *ptr, *tpl, *tpr, *tpd, *ptd;
@@ -207,7 +207,7 @@ void parity_merge(struct coo_t *dest, struct coo_t *from, size_t block, size_t n
 	*tpd = cmp(tpl, tpr, a, length) > 0 ? *tpl : *tpr;
 }
 
-void parity_swap_sixteen(struct coo_t *array,int* a, int length)
+void parity_swap_sixteen(struct coo_t *array, int* a, int length)
 {//四个数一排，排序16个数
 	struct coo_t swap[16];
 	struct coo_t ptl[1];
@@ -216,7 +216,7 @@ void parity_swap_sixteen(struct coo_t *array,int* a, int length)
 	unsigned char x = 0;
 	unsigned char y = 0;
 
-	parity_swap_four(array + 0,  a, length);
+	parity_swap_four(array + 0, a, length);
 	parity_swap_four(array + 4, a, length);
 	parity_swap_four(array + 8, a, length);
 	parity_swap_four(array + 12, a, length);
@@ -231,11 +231,11 @@ void parity_swap_sixteen(struct coo_t *array,int* a, int length)
 	parity_merge(array, swap, 8, 16, a, length);
 }
 
-void tail_swap(struct coo_t *array, size_t nmemb,int* a, int length)
+void tail_swap(struct coo_t *array, size_t nmemb, int* a, int length)
 {
 	if (nmemb < 4)
 	{
-		unguarded_insert(array, 1, nmemb,  a, length);
+		unguarded_insert(array, 1, nmemb, a, length);
 		return;
 	}
 	if (nmemb < 8)
@@ -256,7 +256,7 @@ void tail_swap(struct coo_t *array, size_t nmemb,int* a, int length)
 
 // the next three functions create sorted blocks of 32 elements接下来的三个函数创建32个元素的排序块
 
-void parity_tail_swap_eight(struct coo_t *array,int* a, int length)
+void parity_tail_swap_eight(struct coo_t *array, int* a, int length)
 {//前四个排序好，后四个不清楚
 	struct coo_t swap[8];
 	struct coo_t ptl[1];
@@ -280,7 +280,7 @@ void parity_tail_swap_eight(struct coo_t *array,int* a, int length)
 	parity_merge_four(swap, array, x, y, ptl, ptr, pts, a, length);
 }
 
-void parity_tail_flip_eight(struct coo_t *array,int* a, int length)
+void parity_tail_flip_eight(struct coo_t *array, int* a, int length)
 {//前四个排好序，后四个排好序，前后关系不清楚
 	struct coo_t swap[8];
 	struct coo_t ptl[1];
@@ -298,9 +298,9 @@ void parity_tail_flip_eight(struct coo_t *array,int* a, int length)
 
 	parity_merge_four(swap, array, x, y, ptl, ptr, pts, a, length);
 }
-void tail_merge(struct coo_t *array, struct coo_t *swap, size_t swap_size, size_t nmemb, size_t block,int* a, int length);
+void tail_merge(struct coo_t *array, struct coo_t *swap, size_t swap_size, size_t nmemb, size_t block, int* a, int length);
 
-size_t quad_swap(struct coo_t *array, size_t nmemb,int* a, int length)
+size_t quad_swap(struct coo_t *array, size_t nmemb, int* a, int length)
 {//每八个数排好序，排32个，确定是否有顺序和逆序，减少开销
 	struct coo_t swap[32];
 	size_t count, reverse;
@@ -505,7 +505,7 @@ size_t quad_swap(struct coo_t *array, size_t nmemb,int* a, int length)
 
 // quad merge support routines
 
-void forward_merge(struct coo_t *dest, struct coo_t *from, size_t block,int* a, int length)
+void forward_merge(struct coo_t *dest, struct coo_t *from, size_t block, int* a, int length)
 {//合并两个块，前后关系比较明显
 	struct coo_t *ptl, *ptr, *m, *e; // left, right, middle, end
 
@@ -578,7 +578,7 @@ void forward_merge(struct coo_t *dest, struct coo_t *from, size_t block,int* a, 
 // swap memory: [A  B][C  D] step 2
 // main memory: [A  B  C  D] step 3
 
-void quad_merge_block(struct coo_t *array, struct coo_t *swap, size_t block,int* a, int length)//对四个块排序
+void quad_merge_block(struct coo_t *array, struct coo_t *swap, size_t block, int* a, int length)//对四个块排序
 {
 	register struct coo_t *pts, *c, *c_max;
 	size_t block_x_2 = block * 2;
@@ -626,7 +626,7 @@ void quad_merge_block(struct coo_t *array, struct coo_t *swap, size_t block,int*
 	forward_merge(array, swap, block_x_2, a, length); // step 3
 }
 
-void quad_merge(struct coo_t *array, struct coo_t *swap, size_t swap_size, size_t nmemb, size_t block,int* a, int length)
+void quad_merge(struct coo_t *array, struct coo_t *swap, size_t swap_size, size_t nmemb, size_t block, int* a, int length)
 {
 	register struct coo_t *pta, *pte;
 
@@ -653,7 +653,7 @@ void quad_merge(struct coo_t *array, struct coo_t *swap, size_t swap_size, size_
 	tail_merge(array, swap, swap_size, nmemb, block / 4, a, length);//全体排序
 }
 
-void partial_forward_merge(struct coo_t *array, struct coo_t *swap, size_t nmemb, size_t block,int* a, int length)
+void partial_forward_merge(struct coo_t *array, struct coo_t *swap, size_t nmemb, size_t block, int* a, int length)
 {//已经排序好的相邻两块排序
 	struct coo_t *r, *m, *e, *s; // right, middle, end, swap
 
@@ -706,7 +706,7 @@ void partial_forward_merge(struct coo_t *array, struct coo_t *swap, size_t nmemb
 	}
 }
 
-void partial_backward_merge(struct coo_t *array, struct coo_t *swap, size_t nmemb, size_t block,int* a, int length)
+void partial_backward_merge(struct coo_t *array, struct coo_t *swap, size_t nmemb, size_t block, int* a, int length)
 {//从后向前排，可以考虑不足情况
 	struct coo_t *r, *m, *e, *s; // right, middle, end, swap
 
@@ -771,7 +771,7 @@ void partial_backward_merge(struct coo_t *array, struct coo_t *swap, size_t nmem
 	}
 }
 
-void tail_merge(struct coo_t *array, struct coo_t *swap, size_t swap_size, size_t nmemb, size_t block,int* a, int length)
+void tail_merge(struct coo_t *array, struct coo_t *swap, size_t swap_size, size_t nmemb, size_t block, int* a, int length)
 {
 	register struct coo_t *pta, *pte;
 
@@ -933,7 +933,7 @@ void trinity_rotation(struct coo_t *array, struct coo_t *swap, size_t swap_size,
 	}
 }
 
-size_t monobound_binary_first(struct coo_t *array, struct coo_t *value, size_t top,int* a, int length)
+size_t monobound_binary_first(struct coo_t *array, struct coo_t *value, size_t top, int* a, int length)
 {//二分查找位置，找到右边的等于或者小于前面的位置
 	struct coo_t *end;
 	size_t mid;
@@ -958,7 +958,7 @@ size_t monobound_binary_first(struct coo_t *array, struct coo_t *value, size_t t
 	return (end - array);
 }
 
-void blit_merge_block(struct coo_t *array, struct coo_t *swap, size_t swap_size, size_t block, size_t right,int* a, int length)
+void blit_merge_block(struct coo_t *array, struct coo_t *swap, size_t swap_size, size_t block, size_t right, int* a, int length)
 {
 	size_t left;
 
@@ -1008,7 +1008,7 @@ void blit_merge_block(struct coo_t *array, struct coo_t *swap, size_t swap_size,
 	}
 }
 
-void blit_merge(struct coo_t *array, struct coo_t *swap, size_t swap_size, size_t nmemb, size_t block,int* a, int length)
+void blit_merge(struct coo_t *array, struct coo_t *swap, size_t swap_size, size_t nmemb, size_t block, int* a, int length)
 {//排序两个块
 	struct coo_t *pta, *pte;
 
@@ -1034,7 +1034,7 @@ void blit_merge(struct coo_t *array, struct coo_t *swap, size_t swap_size, size_
 	}
 }
 
-void blitsort(struct coo_t *array, size_t nmemb,int* a, int length)
+void blitsort(struct coo_t *array, size_t nmemb, int* a, int length)
 {
 	if (nmemb < 32)
 	{
@@ -1052,7 +1052,7 @@ void blitsort(struct coo_t *array, size_t nmemb,int* a, int length)
 			swap_size *= 4;
 		}
 #endif
-		struct coo_t *swap =new struct coo_t[swap_size];
+		struct coo_t *swap = new struct coo_t[swap_size];
 
 		quad_merge(array, swap, swap_size, nmemb, 32, a, length);
 
